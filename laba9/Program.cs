@@ -2,10 +2,11 @@
 
 namespace laba9
 {
-    //public delegate void Delegate();
     public delegate void Delegate(string message);
+    public delegate void my_delegate(string message);
     public class Boss
     {
+        public event my_delegate my_event;        
         public bool Activated { get; set; } = false;
         public int level = 1;
         public bool is_working = true;
@@ -21,6 +22,14 @@ namespace laba9
         public void ShowMessage(string message)
         {
             Console.WriteLine(message);
+        }
+        public void Show_end_Message(string message)
+        {
+            Console.WriteLine(message);
+        }
+        public void end_event(string message)
+        {
+            my_event?.Invoke(message);
         }
     }
     public class Cyborg:Boss
@@ -109,9 +118,11 @@ namespace laba9
     }
     class Program
     {
+        
         static void Main(string[] args)
         {
             Cyborg cyborg1 = new Cyborg();
+            cyborg1.my_event += cyborg1.Show_end_Message;
             cyborg1.Turn_on_ev += cyborg1.ShowMessage;
             cyborg1.Upgrade_ev += cyborg1.ShowMessage;
 
@@ -125,6 +136,7 @@ namespace laba9
             cyborg1.Upgrade();
             cyborg1.Upgrade();
             cyborg1.Upgrade();
+            cyborg1.end_event("Конец настройки киборга.");
             Console.WriteLine();
 
             Robot robot1 = new Robot();
@@ -141,10 +153,10 @@ namespace laba9
             robot1.Upgrade();
             robot1.Upgrade();
             robot1.Upgrade();
-            //Delegate2 delegate1 = cyborg1.Turn_on_meth();
-            //delegate1.Invoke();
-        }  
+            cyborg1.end_event("Конец настройки робота.");
+        }
         
+
 
     }
 }
