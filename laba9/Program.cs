@@ -2,49 +2,149 @@
 
 namespace laba9
 {
-    class Account
+    //public delegate void Delegate();
+    public delegate void Delegate(string message);
+    public class Boss
     {
-        public delegate void AccountHandler(string message);
-        public event AccountHandler Notify;              // 1.Определение события
-        public Account(int sum)
+        public bool Activated { get; set; } = false;
+        public int level = 1;
+        public bool is_working = true;
+        public event Delegate Turn_on_ev;
+        public event Delegate Upgrade_ev;
+        public void Start_event(string message, bool flag)
         {
-            Sum = sum;
+            if(flag)
+                Turn_on_ev?.Invoke(message);
+            else
+                Upgrade_ev?.Invoke(message);
         }
-        public int Sum { get; private set; }
-        public void Put(int sum)
+        public void ShowMessage(string message)
         {
-            Sum += sum;
-            Notify?.Invoke($"На счет поступило: {sum}");   // 2.Вызов события 
+            Console.WriteLine(message);
         }
-        public void Take(int sum)
+    }
+    public class Cyborg:Boss
+    {
+        public const int max_level = 2;
+        public void Turn_on()
         {
-            if (Sum >= sum)
+            if (Activated == false && is_working == true)
             {
-                Sum -= sum;
-                Notify?.Invoke($"Со счета снято: {sum}");   // 2.Вызов события
+                Activated = true;
+                Start_event("Попытка включить киборга: киборг был включён.", true);
+            }
+            else if (Activated == true && is_working == true)
+            {
+                Start_event("Попытка включить киборга: киборг уже включён.", true);
             }
             else
             {
-                Notify?.Invoke($"Недостаточно денег на счете. Текущий баланс: {Sum}"); ;
+                Start_event("Попытка включить киборга: киборг сломан.", true);
             }
+        }
+        public void Upgrade()
+        {
+            if (is_working == false)
+            {
+                Start_event("Попытка увеличить уровень киборга: киборг поломан.", false);
+            }
+            else if (Activated == false)
+            {
+                Start_event("Попытка увеличить уровень киборга: киборг выключен.", false);
+            }
+            else if (level > max_level)
+            {
+                is_working = false;
+                Start_event("Попытка увеличить уровень киборга: превышен максимальный уровень киборга, он поломался.", false);
+            }
+            else
+            {
+                level++;
+                Start_event("Попытка увеличить уровень киборга: уровень киборга был повышен, текущий - " + level, false);
+            }              
+
+        }
+    }
+    public class Robot:Boss
+    {
+        public const int max_level = 3;
+        public void Turn_on()
+        {
+            if (Activated == false && is_working == true)
+            {
+                Activated = true;
+                Start_event("Попытка включить робота: робот был включён.", true);
+            }
+            else if (Activated == true && is_working == true)
+            {
+                Start_event("Попытка включить робота: робот уже включён.", true);
+            }
+            else
+            {
+                Start_event("Попытка включить робота: робот сломан.", true);
+            }
+        }
+        public void Upgrade()
+        {
+            if (is_working == false)
+            {
+                Start_event("Попытка увеличить уровень робота: робот поломан.", false);
+            }
+            else if (Activated == false)
+            {
+                Start_event("Попытка увеличить уровень робота: робот выключен.", false);
+            }
+            else if (level > max_level)
+            {
+                is_working = false;
+                Start_event("Попытка увеличить уровень робота: превышен максимальный уровень робота, он поломался.", false);
+            }
+            else
+            {
+                level++;
+                Start_event("Попытка увеличить уровень киборга: уровень робота был повышен, текущий - " + level, false);
+            }
+
         }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            Account acc = new Account(100);
-            acc.Notify += DisplayMessage;   // Добавляем обработчик для события Notify
-            acc.Put(20);    // добавляем на счет 20
-            Console.WriteLine($"Сумма на счете: {acc.Sum}");
-            acc.Take(70);   // пытаемся снять со счета 70
-            Console.WriteLine($"Сумма на счете: {acc.Sum}");
-            acc.Take(180);  // пытаемся снять со счета 180
-            Console.WriteLine($"Сумма на счете: {acc.Sum}");
-        }
-        private static void DisplayMessage(string message)
-        {
-            Console.WriteLine(message);
-        }
+            Cyborg cyborg1 = new Cyborg();
+            cyborg1.Turn_on_ev += cyborg1.ShowMessage;
+            cyborg1.Upgrade_ev += cyborg1.ShowMessage;
+
+            cyborg1.Upgrade();
+            cyborg1.Turn_on();
+            cyborg1.Turn_on();
+            cyborg1.Turn_on();
+            cyborg1.Turn_on();
+            cyborg1.Upgrade();
+            cyborg1.Upgrade();
+            cyborg1.Upgrade();
+            cyborg1.Upgrade();
+            cyborg1.Upgrade();
+            Console.WriteLine();
+
+            Robot robot1 = new Robot();
+            robot1.Turn_on_ev += cyborg1.ShowMessage;
+            robot1.Upgrade_ev += cyborg1.ShowMessage;
+
+            robot1.Upgrade();
+            robot1.Turn_on();
+            robot1.Turn_on();
+            robot1.Turn_on();
+            robot1.Turn_on();
+            robot1.Upgrade();
+            robot1.Upgrade();
+            robot1.Upgrade();
+            robot1.Upgrade();
+            robot1.Upgrade();
+            //Delegate2 delegate1 = cyborg1.Turn_on_meth();
+            //delegate1.Invoke();
+        }  
+        
+
     }
 }
