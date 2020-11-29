@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace laba9
 {
@@ -116,7 +117,7 @@ namespace laba9
     {       
         static void Main(string[] args)
         {
-            Cyborg cyborg1 = new Cyborg();            
+            /*Cyborg cyborg1 = new Cyborg();            
             cyborg1.Turn_on_ev += cyborg1.ShowMessage;
             cyborg1.Upgrade_ev += cyborg1.ShowMessage;
 
@@ -147,10 +148,59 @@ namespace laba9
             robot1.Upgrade();
             robot1.Upgrade();
             robot1.Upgrade();
-            robot1.delegate_helper("Конец настройки робота.");
+            robot1.delegate_helper("Конец настройки робота.");*/
+
+            //2)
+
+            string String = "Первое предложение. Один: два, три - четыре. Третье...";           
+                    
+            Action<string> one;
+            one = String_Computing.Delete_punctuation;
+            one(String);
+
+            int num = 3;
+            string String2 = " ВСТАВКА ";
+            Func<string, string, int, string> two;
+            two = String_Computing.Add_symbol;
+            Console.WriteLine( two(String, String2, num) );
+
+            one = String_Computing.To_upper_case;
+            one(String);
+
+            Func<string, string> three;
+            three = String_Computing.Remove_spaces;
+            Console.WriteLine( three(String) );
+
+            Action<string, string> four;
+            four = String_Computing.To_unite;
+            four(String," ДОБАВЛЕНИЕ");
+        }    
+    }
+    public class String_Computing
+    {        
+        public static void Delete_punctuation(string String)
+        {     
+            Console.WriteLine( Regex.Replace(String, "[-.?!)(,:]", "") );
         }
-        
-
-
+        public static string Add_symbol(string String, string symb, int num)
+        {            
+            return String.Insert(num, symb);
+        }
+        public static void To_upper_case(string String)
+        {
+            for(int i = 0; i < String.Length; i++)
+            {
+                Console.Write(String.ToUpper()[i]);
+            }
+            Console.WriteLine();
+        }
+        public static string Remove_spaces(string String)
+        {            
+            return Regex.Replace(String, " ", "");
+        }
+        public static void To_unite(string String, string String2)
+        {
+            Console.WriteLine(String + String2);
+        }
     }
 }
